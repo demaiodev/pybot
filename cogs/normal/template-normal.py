@@ -35,13 +35,23 @@ def list_to_string(arg):
 class Template(commands.Cog, name="template-normal"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(
+        name="choose"
+    )
+    @checks.not_blacklisted()
+    async def choose(self, context: Context, *names):
+        await context.send(embed=disnake.Embed(
+            title="Who's it gonna be...",
+            description=f"I choose {random.choice(list(names)).capitalize()}!",
+            color=random.randint(0, 0xFFFFFF)
+        ))
        
     @commands.command(
         name="joke"
     )
     @checks.not_blacklisted()
     async def joke(self, context: Context):
-      
         async with aiohttp.ClientSession() as session:
             async with session.request("GET", f'{RAPI_URL}/joke', headers=headers) as request:
                 if request.status == 200:
@@ -95,7 +105,6 @@ class Template(commands.Cog, name="template-normal"):
             prompt = list_to_string(search)
             async with session.post("https://bf.dallemini.ai/generate",
                 json={"prompt": prompt}) as request:
-                print(request)
                 if request.status == 200:
                     data = await request.json()
                     file = disnake.File(io.BytesIO(base64.b64decode(data["images"][0])), f"{prompt}.jpg")
@@ -112,7 +121,6 @@ class Template(commands.Cog, name="template-normal"):
         description="Roll some dice (between 1 and x).",
     )
     @checks.not_blacklisted()
-    @checks.is_owner()
     async def roll(self, context: Context, number: int) -> None:
         if number <= 42069:
             roll = random.randint(1, number)
@@ -161,7 +169,6 @@ class Template(commands.Cog, name="template-normal"):
     async def affirmation(self, context: Context):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://www.affirmations.dev/") as request:
-                print(request)
                 if request.status == 200:
                     data = await request.json()
                     embed = disnake.Embed(
