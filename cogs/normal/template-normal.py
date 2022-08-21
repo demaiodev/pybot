@@ -49,7 +49,7 @@ class Template(commands.Cog, name="template-normal"):
                     embed = disnake.Embed(
                         title="Joke Time",
                         description=data["joke"],
-                        color=0xE0202B
+                        color=random.randint(0, 0xFFFFFF)
                     )
                 else:
                     embed = disnake.Embed(
@@ -75,7 +75,7 @@ class Template(commands.Cog, name="template-normal"):
                     embed = disnake.Embed(
                         title=str,
                         description=data["AIResponse"],
-                        color=0x0E1E1E
+                        color=random.randint(0, 0xFFFFFF)
                     )
                 else:
                     embed = disnake.Embed(
@@ -124,7 +124,7 @@ class Template(commands.Cog, name="template-normal"):
             embed = disnake.Embed(
                 title="🎲  🎲  🎲",
                 description=f"You rolled {roll} out of {number}!",
-                color=0x9C84EF
+                color=random.randint(0, 0xFFFFFF)
             )
             embed.set_footer(
                 text=text
@@ -143,7 +143,7 @@ class Template(commands.Cog, name="template-normal"):
                     embed = disnake.Embed(
                         title=f'Your {category}, sir.',
                         description="😍",
-                        color=0x9C84EF
+                        color=random.randint(0, 0xFFFFFF)
                     )
                     embed.set_image(data["url"])
                 else:
@@ -166,7 +166,7 @@ class Template(commands.Cog, name="template-normal"):
                     data = await request.json()
                     embed = disnake.Embed(
                         description=data["affirmation"],
-                        color=0xD75BF4
+                        color=random.randint(0, 0xFFFFFF)
                     )
                 else:
                     embed = disnake.Embed(
