@@ -240,6 +240,7 @@ class Moderation(commands.Cog, name="moderation-slash"):
     )
     @commands.has_guild_permissions(manage_messages=True)
     @checks.not_blacklisted()
+    @checks.is_owner()
     async def purge(self, interaction: ApplicationCommandInteraction, amount: int) -> None:
         """
         Delete a number of messages.

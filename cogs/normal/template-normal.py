@@ -29,38 +29,20 @@ def list_to_string(arg):
         value = value + item + " "
     return value
 
-# Here we name the cog and create a new class for the cog.
+
+def handle_error(status):
+    embed = disnake.Embed(
+        title="Error!",
+        description="There is something wrong with the API, please try again later",
+        color=0xE02B2B
+    )
+    embed.set_image(f"https://http.cat/{status}")
+    return embed
 
 
 class Template(commands.Cog, name="template-normal"):
     def __init__(self, bot):
         self.bot = bot
-
-    #https://random-word-api.herokuapp.com/word?length=5
-    
-    # @commands.command(
-    #     name="wordle"
-    # )
-    # @checks.not_blacklisted()
-    # async def wordle(self, context: Context):
-    #     async with aiohttp.ClientSession() as session:
-    #         async with session.get("https://random-word-api.herokuapp.com/word?length=5") as request:
-    #             if request.status == 200:
-    #                 data: list = await request.json()
-    #                 embed = disnake.Embed(
-    #                     title="Wordle",
-    #                     description=data[0],
-    #                     color=random.randint(0, 0xFFFFFF)
-    #                 )
-    #                 answer = disnake.ui.Choice(label="Enter a letter:",max_length=1)
-    #                 print(answer)
-    #             else:
-    #                 embed = disnake.Embed(
-    #                     title="Error!",
-    #                     description="There is something wrong with the API, please try again later",
-    #                     color=0xE02B2B
-    #                 )
-    #             await context.send(embed=embed)
 
     @commands.command(
         name="choose"
@@ -72,13 +54,14 @@ class Template(commands.Cog, name="template-normal"):
             description=f"I choose {random.choice(list(names)).capitalize()}!",
             color=random.randint(0, 0xFFFFFF)
         ))
-       
+
     @commands.command(
         name="joke"
     )
     @checks.not_blacklisted()
     async def joke(self, context: Context):
         async with aiohttp.ClientSession() as session:
+            # https://rapidapi.com/pgamerxdev/api/random-stuff-api/
             async with session.request("GET", f'{RAPI_URL}/joke', headers=headers) as request:
                 if request.status == 200:
                     data = await request.json()
@@ -88,11 +71,7 @@ class Template(commands.Cog, name="template-normal"):
                         color=random.randint(0, 0xFFFFFF)
                     )
                 else:
-                    embed = disnake.Embed(
-                        title="Error!",
-                        description="There is something wrong with the API, please try again later",
-                        color=0xE02B2B
-                    )
+                    embed = handle_error(request.status)
                 await context.send(embed=embed)
 
     @commands.command(
@@ -104,8 +83,7 @@ class Template(commands.Cog, name="template-normal"):
         async with aiohttp.ClientSession() as session:
             async with session.request("GET", f'{RAPI_URL}/ai', params={
                 "msg": str
-            },
-                headers=headers) as request:
+            }, headers=headers) as request:
                 if request.status == 200:
                     data = await request.json()
                     embed = disnake.Embed(
@@ -114,11 +92,7 @@ class Template(commands.Cog, name="template-normal"):
                         color=random.randint(0, 0xFFFFFF)
                     )
                 else:
-                    embed = disnake.Embed(
-                        title="Error!",
-                        description="There is something wrong with the API, please try again later",
-                        color=0xE02B2B
-                    )
+                    embed = handle_error(request.status)
                 await context.send(embed=embed)
 
     @commands.command(
@@ -130,17 +104,14 @@ class Template(commands.Cog, name="template-normal"):
             await context.send(embed=disnake.Embed(title=f"Brb, getting {list_to_string(search)}."))
             prompt = list_to_string(search)
             async with session.post("https://bf.dallemini.ai/generate",
-                json={"prompt": prompt}) as request:
+                                    json={"prompt": prompt}) as request:
                 if request.status == 200:
                     data = await request.json()
-                    file = disnake.File(io.BytesIO(base64.b64decode(data["images"][0])), f"{prompt}.jpg")
+                    file = disnake.File(io.BytesIO(
+                        base64.b64decode(data["images"][0])), f"{prompt}.jpg")
                     await context.send(file=file)
                 else:
-                    await context.send(embed=disnake.Embed(
-                        title="Error!",
-                        description="There is something wrong with the API, please try again later",
-                        color=0xE02B2B
-                    ))
+                    await context.send(embed = handle_error(request.status))
 
     @commands.command(
         name="roll",
@@ -150,7 +121,7 @@ class Template(commands.Cog, name="template-normal"):
     async def roll(self, context: Context, number: int) -> None:
         if number <= 42069:
             roll = random.randint(1, number)
-            text = ""           
+            text = ""
             if roll >= number/2:
                 text = "😏 📈 Not Bad! 📈 😏"
             else:
@@ -181,11 +152,7 @@ class Template(commands.Cog, name="template-normal"):
                     )
                     embed.set_image(data["url"])
                 else:
-                    embed = disnake.Embed(
-                        title="Error!",
-                        description="There is something wrong with the API, please try again later",
-                        color=0xE02B2B
-                    )
+                    embed = handle_error(request.status)
                 await context.send(embed=embed)
 
     @commands.command(
@@ -202,11 +169,7 @@ class Template(commands.Cog, name="template-normal"):
                         color=random.randint(0, 0xFFFFFF)
                     )
                 else:
-                    embed = disnake.Embed(
-                        title="Error!",
-                        description="There is something wrong with the API, please try again later",
-                        color=0xE02B2B
-                    )
+                    embed = handle_error(request.status)
                 await context.send(embed=embed)
 
 def setup(bot):
