@@ -38,7 +38,7 @@ async def on_ready() -> None:
 
 @tasks.loop(minutes=5.0)
 async def status_task() -> None:
-    statuses = ["ʕ •ᴥ•ʔ", " ʕ≧ᴥ≦ʔ", "＼ʕ •ᴥ•ʔ／", "ʕ ꈍᴥꈍʔ", "ʕง•ᴥ•ʔง", "ʕ　·ᴥ·ʔ", "ʕ •ᴥ•ʔ", " ʕʘ̅┏ل͜┓ʘ̅ʔ", "ʕʘ̅͜ʘ̅ʔ", "ʕ•┏ل͜┓•ʔ", "ʕㅎ┏ل͜┓ㅎʔ"]
+    statuses = ["Escape from Tarkov", "Age of Empires 2"]
     await bot.change_presence(activity=disnake.Game(random.choice(statuses)))
 
 

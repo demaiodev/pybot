@@ -36,6 +36,32 @@ class Template(commands.Cog, name="template-normal"):
     def __init__(self, bot):
         self.bot = bot
 
+    #https://random-word-api.herokuapp.com/word?length=5
+    
+    # @commands.command(
+    #     name="wordle"
+    # )
+    # @checks.not_blacklisted()
+    # async def wordle(self, context: Context):
+    #     async with aiohttp.ClientSession() as session:
+    #         async with session.get("https://random-word-api.herokuapp.com/word?length=5") as request:
+    #             if request.status == 200:
+    #                 data: list = await request.json()
+    #                 embed = disnake.Embed(
+    #                     title="Wordle",
+    #                     description=data[0],
+    #                     color=random.randint(0, 0xFFFFFF)
+    #                 )
+    #                 answer = disnake.ui.Choice(label="Enter a letter:",max_length=1)
+    #                 print(answer)
+    #             else:
+    #                 embed = disnake.Embed(
+    #                     title="Error!",
+    #                     description="There is something wrong with the API, please try again later",
+    #                     color=0xE02B2B
+    #                 )
+    #             await context.send(embed=embed)
+
     @commands.command(
         name="choose"
     )

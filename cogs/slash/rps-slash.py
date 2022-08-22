@@ -5,15 +5,6 @@ from disnake.ext import commands
 
 from helpers import checks
 
-
-
-
-class Choice(disnake.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.choice = None
-
-
 class RockPaperScissors(disnake.ui.Select):
     def __init__(self):
 
@@ -37,56 +28,37 @@ class RockPaperScissors(disnake.ui.Select):
         )
 
     async def callback(self, interaction: disnake.MessageInteraction):
-        user1_choice = None
-        user1_choice_index = None
-        user2_choice = None
-        user2_choice_index = None
         choices = {
             "rock": 0,
             "paper": 1,
             "scissors": 2,
         }
-        if user1_choice is not None:
-            # user 1 makes choice
-            user1_choice = self.values[0].lower()
-            user1_choice_index = choices[user1_choice]
-            await interaction.send("User 1 made a choice")
-            await interaction.send("User 2 needs to make a choice")
+        user_choice = self.values[0].lower()
+        user_choice_index = choices[user_choice]
+
+        opponent_choice = random.choice(list(choices.keys()))
+        opponent_choice_index = choices[opponent_choice]
+
+        result_embed = disnake.Embed(color=0x9C84EF)
+        result_embed.set_author(name=interaction.author.display_name, icon_url=interaction.author.avatar.url)
+
+        if user_choice_index == opponent_choice_index:
+            result_embed.description = f"**That's a draw!**\nYou've chosen {user_choice} and I've chosen {opponent_choice}."
+            result_embed.colour = 0xF59E42
+        elif user_choice_index == 0 and opponent_choice_index == 2:
+            result_embed.description = f"**You won!**\nYou've chosen {user_choice} and I've chosen {opponent_choice}."
+            result_embed.colour = 0x9C84EF
+        elif user_choice_index == 1 and opponent_choice_index == 0:
+            result_embed.description = f"**You won!**\nYou've chosen {user_choice} and I've chosen {opponent_choice}."
+            result_embed.colour = 0x9C84EF
+        elif user_choice_index == 2 and opponent_choice_index == 1:
+            result_embed.description = f"**You won!**\nYou've chosen {user_choice} and I've chosen {opponent_choice}."
+            result_embed.colour = 0x9C84EF
         else:
-            # user 1 makes choice
-            await interaction.send("User 2 made a choice")
-            user2_choice = self.values[0].lower()
-            user2_choice_index = choices[user2_choice]
-
+            result_embed.description = f"**I won!**\nYou've chosen {user_choice} and I've chosen {opponent_choice}."
+            result_embed.colour = 0xE02B2B
         await interaction.response.defer()
-
-        if user1_choice and user2_choice is not None:
-            # calculate results and display
-            result_embed = disnake.Embed(color=0x9C84EF)
-            result_embed.set_author(
-                name=interaction.author.display_name, icon_url=interaction.author.avatar.url)
-
-            if user1_choice_index == user2_choice_index:
-                result_embed.description = f"**That's a draw!**\nYou've chosen {user1_choice} and I've chosen {user2_choice}."
-                result_embed.colour = 0xF59E42
-            elif user1_choice_index == 0 and user2_choice_index == 2:
-                result_embed.description = f"**You won!**\nYou've chosen {user1_choice} and I've chosen {user2_choice}."
-                result_embed.colour = 0x9C84EF
-            elif user1_choice_index == 1 and user2_choice_index == 0:
-                result_embed.description = f"**You won!**\nYou've chosen {user1_choice} and I've chosen {user2_choice}."
-                result_embed.colour = 0x9C84EF
-            elif user1_choice_index == 2 and user2_choice_index == 1:
-                result_embed.description = f"**You won!**\nYou've chosen {user1_choice} and I've chosen {user2_choice}."
-                result_embed.colour = 0x9C84EF
-            else:
-                result_embed.description = f"**I won!**\nYou've chosen {user1_choice} and I've chosen {user2_choice}."
-                result_embed.colour = 0xE02B2B
-            user1_choice = None
-            user1_choice_index = None
-            user2_choice = None
-            user2_choice_index = None
-            await interaction.response.defer()
-            await interaction.edit_original_message(embed=result_embed, content=None, view=None)
+        await interaction.edit_original_message(embed=result_embed, content=None, view=None)
 
 
 class RockPaperScissorsView(disnake.ui.View):
@@ -95,7 +67,7 @@ class RockPaperScissorsView(disnake.ui.View):
         self.add_item(RockPaperScissors())
 
 
-class Rps(commands.Cog, name="Rps-slash"):
+class Rps(commands.Cog, name="rps-slash"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -110,7 +82,7 @@ class Rps(commands.Cog, name="Rps-slash"):
         :param interaction: The application command interaction.
         """
         view = RockPaperScissorsView()
-        await interaction.send("Please make your choice", view=view, ephemeral=True)
+        await interaction.send("Please make your choice", view=view)
 
 
 def setup(bot):
