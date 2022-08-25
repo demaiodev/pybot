@@ -11,23 +11,7 @@ from helpers import checks
 
 dotenv.load_dotenv()
 RAPI_KEY = os.environ.get("RAPI_KEY")
-RAPI_KEY2 = os.environ.get("RAPI_KEY2")
 RAPI_URL = os.environ.get("RAPI_URL")
-
-headers = {
-    "Authorization": RAPI_KEY,
-    "X-RapidAPI-Key": RAPI_KEY2,
-    "X-RapidAPI-Host": "random-stuff-api.p.rapidapi.com"
-}
-
-def list_to_string(arg):
-    """
-    transform a list of words into a single string
-    """
-    value = ''
-    for item in arg:
-        value = value + item + " "
-    return value
 
 
 def handle_error(status):
@@ -61,36 +45,23 @@ class Template(commands.Cog, name="template-normal"):
     @checks.not_blacklisted()
     async def joke(self, context: Context):
         async with aiohttp.ClientSession() as session:
-            # https://rapidapi.com/pgamerxdev/api/random-stuff-api/
-            async with session.request("GET", f'{RAPI_URL}/joke', headers=headers) as request:
+            async with session.request("GET", 'https://jokeapi-v2.p.rapidapi.com/joke/Any', headers={
+                "X-RapidAPI-Key": RAPI_KEY,
+                "X-RapidAPI-Host": "jokeapi-v2.p.rapidapi.com"
+            }) as request:
                 if request.status == 200:
                     data = await request.json()
+                    title, description = '', ''
+                    if (data["type"] == "single"):
+                        title, description = 'Joke Time', data["joke"]
+                    else:
+                        title, description = data["setup"], data["delivery"]
                     embed = disnake.Embed(
-                        title="Joke Time",
-                        description=data["joke"],
+                        title=title,
+                        description=description,
                         color=random.randint(0, 0xFFFFFF)
                     )
-                else:
-                    embed = handle_error(request.status)
-                await context.send(embed=embed)
 
-    @commands.command(
-        name="chatbot"
-    )
-    @checks.not_blacklisted()
-    async def chatbot(self, context: Context, *text):
-        str = list_to_string(text).capitalize()
-        async with aiohttp.ClientSession() as session:
-            async with session.request("GET", f'{RAPI_URL}/ai', params={
-                "msg": str
-            }, headers=headers) as request:
-                if request.status == 200:
-                    data = await request.json()
-                    embed = disnake.Embed(
-                        title=str,
-                        description=data["AIResponse"],
-                        color=random.randint(0, 0xFFFFFF)
-                    )
                 else:
                     embed = handle_error(request.status)
                 await context.send(embed=embed)
@@ -99,19 +70,19 @@ class Template(commands.Cog, name="template-normal"):
         name="generateimage"
     )
     @checks.not_blacklisted()
-    async def generateimage(self, context: Context, *search):
+    async def generateimage(self, context: Context, search, x=0):
         async with aiohttp.ClientSession() as session:
-            await context.send(embed=disnake.Embed(title=f"Brb, getting {list_to_string(search)}."))
-            prompt = list_to_string(search)
+            await context.send(embed=disnake.Embed(title=f"Brb, getting {search}."))
             async with session.post("https://bf.dallemini.ai/generate",
-                                    json={"prompt": prompt}) as request:
+                                    json={"prompt": search}) as request:
                 if request.status == 200:
                     data = await request.json()
-                    file = disnake.File(io.BytesIO(
-                        base64.b64decode(data["images"][0])), f"{prompt}.jpg")
-                    await context.send(file=file)
+                    for n in range(x):
+                        file = disnake.File(io.BytesIO(
+                            base64.b64decode(data["images"][n])), f"{search}.jpg")
+                        await context.send(file=file)
                 else:
-                    await context.send(embed = handle_error(request.status))
+                    await context.send(embed=handle_error(request.status))
 
     @commands.command(
         name="roll",
@@ -171,6 +142,7 @@ class Template(commands.Cog, name="template-normal"):
                 else:
                     embed = handle_error(request.status)
                 await context.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Template(bot))
