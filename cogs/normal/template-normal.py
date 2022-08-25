@@ -70,7 +70,7 @@ class Template(commands.Cog, name="template-normal"):
         name="generateimage"
     )
     @checks.not_blacklisted()
-    async def generateimage(self, context: Context, search, x=0):
+    async def generateimage(self, context: Context, search, x=1):
         async with aiohttp.ClientSession() as session:
             await context.send(embed=disnake.Embed(title=f"Brb, getting {search}."))
             async with session.post("https://bf.dallemini.ai/generate",
