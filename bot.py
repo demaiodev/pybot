@@ -56,7 +56,6 @@ def load_commands(command_type: str) -> None:
 
 if __name__ == "__main__":
     load_commands("slash")
-    load_commands("normal")
 
 
 @bot.event
