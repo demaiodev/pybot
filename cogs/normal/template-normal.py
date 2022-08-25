@@ -77,6 +77,8 @@ class Template(commands.Cog, name="template-normal"):
                                     json={"prompt": search}) as request:
                 if request.status == 200:
                     data = await request.json()
+                    if x > 9:
+                        x = 9
                     for n in range(x):
                         file = disnake.File(io.BytesIO(
                             base64.b64decode(data["images"][n])), f"{search}.jpg")
