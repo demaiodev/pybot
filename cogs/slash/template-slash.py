@@ -59,6 +59,7 @@ class Template(commands.Cog, name="template-slash"):
         """
         Return a random joke for the user.
         """
+        await interaction.response.defer()
         async with aiohttp.ClientSession() as session:
             async with session.request("GET", 'https://jokeapi-v2.p.rapidapi.com/joke/Any',
                                        headers={
@@ -77,7 +78,6 @@ class Template(commands.Cog, name="template-slash"):
                         description=description,
                         color=random.randint(0, 0xFFFFFF)
                     )
-
                 else:
                     embed = handle_error(request.status)
                 await interaction.send(embed=embed)
